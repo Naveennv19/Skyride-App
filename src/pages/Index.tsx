@@ -128,17 +128,16 @@ const Index = () => {
                   alt="Premium Road Trip Experience" 
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent"></div>
                 <div className="absolute inset-0 flex items-center justify-center text-center text-white z-10">
                   <div>
                     <div className="mb-6">
-                      <div className="w-32 h-16 mx-auto bg-gradient-to-r from-blue-400/80 to-purple-400/80 rounded-xl flex items-center justify-center mb-4 shadow-2xl backdrop-blur-sm">
+                      <div className="w-32 h-16 mx-auto bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4 shadow-2xl">
                         <Car className="h-12 w-12 text-white" />
                       </div>
                       <div className="flex justify-center space-x-2 mb-4">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-75"></div>
-                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-white/70 rounded-full animate-pulse delay-75"></div>
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse delay-150"></div>
                       </div>
                     </div>
                     <h3 className="text-2xl font-bold mb-2 drop-shadow-lg">Your Premium Ride</h3>
@@ -192,16 +191,15 @@ const Index = () => {
                       alt={type.title} 
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
-                    <div className={`absolute inset-0 bg-gradient-to-br ${type.color} opacity-80`}></div>
                     <CardContent className="absolute inset-0 h-full p-6 text-white flex flex-col justify-between z-10">
                       <div className="flex justify-between items-start">
-                        <div className="text-white opacity-90">
+                        <div className="text-white bg-white/20 backdrop-blur-sm p-2 rounded-lg">
                           {type.icon}
                         </div>
                       </div>
-                      <div>
-                        <h3 className="text-xl font-bold mb-2 drop-shadow-lg">{type.title}</h3>
-                        <p className="text-sm opacity-90 drop-shadow-md">{type.description}</p>
+                      <div className="bg-black/40 backdrop-blur-sm p-4 rounded-lg">
+                        <h3 className="text-xl font-bold mb-2">{type.title}</h3>
+                        <p className="text-sm opacity-90">{type.description}</p>
                       </div>
                     </CardContent>
                   </div>
