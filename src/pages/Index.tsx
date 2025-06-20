@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -126,22 +125,18 @@ const Index = () => {
                 <img 
                   src="/lovable-uploads/1e6144f0-9dba-4cf3-aa94-702828f84576.png" 
                   alt="Premium Road Trip Experience" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-center"
+                  style={{ imageRendering: 'crisp-edges', imageResolution: '300dpi' }}
                 />
-                <div className="absolute inset-0 flex items-center justify-center text-center text-white z-10">
-                  <div>
-                    <div className="mb-6">
-                      <div className="w-32 h-16 mx-auto bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4 shadow-2xl">
-                        <Car className="h-12 w-12 text-white" />
-                      </div>
-                      <div className="flex justify-center space-x-2 mb-4">
-                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-white/70 rounded-full animate-pulse delay-75"></div>
-                        <div className="w-2 h-2 bg-white rounded-full animate-pulse delay-150"></div>
+                <div className="absolute bottom-6 left-6 right-6 text-white z-10">
+                  <div className="bg-black/50 backdrop-blur-md rounded-2xl p-6">
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="w-16 h-16 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl">
+                        <Car className="h-8 w-8 text-white" />
                       </div>
                     </div>
-                    <h3 className="text-2xl font-bold mb-2 drop-shadow-lg">Your Premium Ride</h3>
-                    <p className="text-lg opacity-90 drop-shadow-md">Safe • Reliable • Comfortable</p>
+                    <h3 className="text-2xl font-bold text-center mb-2">Your Premium Ride</h3>
+                    <p className="text-center text-white/90">Safe • Reliable • Comfortable</p>
                   </div>
                 </div>
               </div>
@@ -184,22 +179,24 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {rideTypes.map((type, index) => (
               <Link key={index} to="/book-ride">
-                <Card className="ride-type-card h-64 cursor-pointer group overflow-hidden">
+                <Card className="ride-type-card h-80 cursor-pointer group overflow-hidden relative">
                   <div className="relative h-full">
                     <img 
                       src={type.image} 
                       alt={type.title} 
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-110"
+                      style={{ imageRendering: 'crisp-edges', imageResolution: '300dpi' }}
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
                     <CardContent className="absolute inset-0 h-full p-6 text-white flex flex-col justify-between z-10">
-                      <div className="flex justify-between items-start">
-                        <div className="text-white bg-white/20 backdrop-blur-sm p-2 rounded-lg">
+                      <div className="flex justify-end items-start">
+                        <div className="text-white bg-white/20 backdrop-blur-md p-3 rounded-xl shadow-lg">
                           {type.icon}
                         </div>
                       </div>
-                      <div className="bg-black/40 backdrop-blur-sm p-4 rounded-lg">
-                        <h3 className="text-xl font-bold mb-2">{type.title}</h3>
-                        <p className="text-sm opacity-90">{type.description}</p>
+                      <div className="bg-black/60 backdrop-blur-md p-5 rounded-xl">
+                        <h3 className="text-xl font-bold mb-2 text-white">{type.title}</h3>
+                        <p className="text-sm text-white/90 leading-relaxed">{type.description}</p>
                       </div>
                     </CardContent>
                   </div>
