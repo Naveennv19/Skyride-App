@@ -16,25 +16,29 @@ const Index = () => {
       icon: <Plane className="h-8 w-8" />,
       title: 'Airport Travel',
       description: 'Reliable rides to and from the airport',
-      color: 'from-blue-500 to-blue-600'
+      color: 'from-blue-500 to-blue-600',
+      image: '/lovable-uploads/5f220db3-72af-4967-a7f9-e24f818005ed.png'
     },
     {
       icon: <Car className="h-8 w-8" />,
       title: 'Local Travel',
       description: 'Quick rides around the city',
-      color: 'from-green-500 to-green-600'
-    },
-    {
-      icon: <Globe className="h-8 w-8" />,
-      title: 'Outstation Travel',
-      description: 'Long distance comfortable journeys',
-      color: 'from-purple-500 to-purple-600'
+      color: 'from-green-500 to-green-600',
+      image: '/lovable-uploads/6accf1c8-ccb1-44ad-8bfa-b52e97c41b79.png'
     },
     {
       icon: <Timer className="h-8 w-8" />,
       title: 'Hourly Rentals',
       description: 'Book a cab for multiple hours',
-      color: 'from-orange-500 to-orange-600'
+      color: 'from-orange-500 to-orange-600',
+      image: '/lovable-uploads/f186bf35-ecd8-4d1e-8ebb-52bb56ecdaad.png'
+    },
+    {
+      icon: <Globe className="h-8 w-8" />,
+      title: 'Outstation Travel',
+      description: 'Long distance comfortable journeys',
+      color: 'from-purple-500 to-purple-600',
+      image: '/lovable-uploads/89963e67-b14b-4825-bc3a-0f7321c8ea09.png'
     }
   ];
 
@@ -116,28 +120,31 @@ const Index = () => {
               </Card>
             </div>
 
-            {/* Modern Cab Service Illustration */}
+            {/* Premium Ride Section with High-Quality Image */}
             <div className="relative">
-              <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-2xl p-8 h-96 flex items-center justify-center relative overflow-hidden">
-                {/* Modern Car Silhouette */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
-                <div className="relative z-10 text-center text-white">
-                  <div className="mb-6">
-                    <div className="w-32 h-16 mx-auto bg-gradient-to-r from-blue-400 to-purple-400 rounded-xl flex items-center justify-center mb-4 shadow-2xl">
-                      <Car className="h-12 w-12 text-white" />
+              <div className="rounded-2xl overflow-hidden h-96 relative">
+                <img 
+                  src="/lovable-uploads/1e6144f0-9dba-4cf3-aa94-702828f84576.png" 
+                  alt="Premium Road Trip Experience" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent"></div>
+                <div className="absolute inset-0 flex items-center justify-center text-center text-white z-10">
+                  <div>
+                    <div className="mb-6">
+                      <div className="w-32 h-16 mx-auto bg-gradient-to-r from-blue-400/80 to-purple-400/80 rounded-xl flex items-center justify-center mb-4 shadow-2xl backdrop-blur-sm">
+                        <Car className="h-12 w-12 text-white" />
+                      </div>
+                      <div className="flex justify-center space-x-2 mb-4">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-75"></div>
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
+                      </div>
                     </div>
-                    <div className="flex justify-center space-x-2 mb-4">
-                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-75"></div>
-                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
-                    </div>
+                    <h3 className="text-2xl font-bold mb-2 drop-shadow-lg">Your Premium Ride</h3>
+                    <p className="text-lg opacity-90 drop-shadow-md">Safe • Reliable • Comfortable</p>
                   </div>
-                  <h3 className="text-2xl font-bold mb-2">Your Premium Ride</h3>
-                  <p className="text-lg opacity-90">Safe • Reliable • Comfortable</p>
                 </div>
-                {/* Floating Elements */}
-                <div className="absolute top-8 right-8 w-4 h-4 bg-blue-400 rounded-full opacity-60 animate-bounce"></div>
-                <div className="absolute bottom-8 left-8 w-3 h-3 bg-purple-400 rounded-full opacity-60 animate-bounce delay-300"></div>
               </div>
             </div>
           </div>
@@ -167,7 +174,7 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Ride Types Section */}
+      {/* Ride Types Section with High-Quality Images */}
       <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -178,18 +185,26 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {rideTypes.map((type, index) => (
               <Link key={index} to="/book-ride">
-                <Card className="ride-type-card h-48 cursor-pointer group">
-                  <CardContent className={`h-full p-6 bg-gradient-to-br ${type.color} text-white flex flex-col justify-between`}>
-                    <div className="flex justify-between items-start">
-                      <div className="text-white opacity-90">
-                        {type.icon}
+                <Card className="ride-type-card h-64 cursor-pointer group overflow-hidden">
+                  <div className="relative h-full">
+                    <img 
+                      src={type.image} 
+                      alt={type.title} 
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${type.color} opacity-80`}></div>
+                    <CardContent className="absolute inset-0 h-full p-6 text-white flex flex-col justify-between z-10">
+                      <div className="flex justify-between items-start">
+                        <div className="text-white opacity-90">
+                          {type.icon}
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold mb-2">{type.title}</h3>
-                      <p className="text-sm opacity-90">{type.description}</p>
-                    </div>
-                  </CardContent>
+                      <div>
+                        <h3 className="text-xl font-bold mb-2 drop-shadow-lg">{type.title}</h3>
+                        <p className="text-sm opacity-90 drop-shadow-md">{type.description}</p>
+                      </div>
+                    </CardContent>
+                  </div>
                 </Card>
               </Link>
             ))}
