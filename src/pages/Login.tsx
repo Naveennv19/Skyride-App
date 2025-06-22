@@ -110,7 +110,7 @@ const Login = () => {
 
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-600 mb-2">Demo credentials:</p>
-              <p className="text-xs text-gray-500">Admin: admin@skyride.com / admin123</p>
+              <p className="text-xs text-gray-500">Admin: admin_1@gmail.com / admin_1</p>
             </div>
           </CardContent>
         </Card>

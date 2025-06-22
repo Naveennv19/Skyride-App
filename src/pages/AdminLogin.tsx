@@ -22,7 +22,7 @@ const AdminLogin = () => {
 
     try {
       // Only allow admin login - check for admin credentials specifically
-      if (email === 'admin@skyride.com' && password === 'admin123') {
+      if (email === 'admin_1@gmail.com' && password === 'admin_1') {
         const success = await login(email, password);
         if (success) {
           toast({
@@ -122,7 +122,7 @@ const AdminLogin = () => {
 
             <div className="mt-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
               <p className="text-sm text-gray-400 mb-2">Demo admin credentials:</p>
-              <p className="text-xs text-gray-500">admin@skyride.com / admin123</p>
+              <p className="text-xs text-gray-500">admin_1@gmail.com / admin_1</p>
             </div>
           </CardContent>
         </Card>

@@ -63,11 +63,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     
     // Default admin user for demo
-    if (email === 'admin@skyride.com' && password === 'admin123') {
+    if (email === 'admin_1@gmail.com' && password === 'admin_1') {
       const adminUser = {
         id: 'admin-1',
         name: 'Admin User',
-        email: 'admin@skyride.com',
+        email: 'admin_1@gmail.com',
         phone: '+1234567890',
         role: 'admin' as const
       };
