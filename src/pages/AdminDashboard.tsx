@@ -32,13 +32,8 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const savedBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    const bookingsWithCustomers = savedBookings.map((booking: Booking) => ({
-      ...booking,
-      customerName: 'Customer User', // Mock customer name
-    }));
-    
-    setBookings(bookingsWithCustomers);
-    setFilteredBookings(bookingsWithCustomers);
+    setBookings(savedBookings);
+    setFilteredBookings(savedBookings);
   }, []);
 
   useEffect(() => {
@@ -102,7 +97,7 @@ const AdminDashboard = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600">Welcome {user?.name}! Manage bookings and assign drivers</p>
+          <p className="text-gray-600">Welcome {user?.name}! ({user?.role?.toUpperCase()}) Manage bookings and assign drivers</p>
         </div>
 
         {/* Stats Cards */}
@@ -305,7 +300,8 @@ const AdminDashboard = () => {
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-600">No bookings match your filters</p>
+                <p className="text-gray-600">No bookings found</p>
+                <p className="text-sm text-gray-500 mt-2">Bookings will appear here once customers make reservations</p>
               </div>
             )}
           </CardContent>

@@ -31,13 +31,10 @@ const DriverDashboard = () => {
 
   useEffect(() => {
     const savedBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    // For demo purposes, show some assigned bookings to the current driver
-    const driverBookings = savedBookings.map((booking: Booking) => ({
-      ...booking,
-      assignedDriver: user?.id,
-      customerName: 'John Customer', // Mock customer name
-      status: booking.status === 'pending' ? 'assigned' : booking.status
-    }));
+    // Only show bookings assigned to this driver
+    const driverBookings = savedBookings.filter((booking: Booking) => 
+      booking.assignedDriver === user?.id
+    );
     
     setBookings(driverBookings);
     setFilteredBookings(driverBookings);
@@ -83,7 +80,7 @@ const DriverDashboard = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Driver Dashboard</h1>
-          <p className="text-gray-600">Welcome back, {user?.name}! Here are your ride assignments</p>
+          <p className="text-gray-600">Welcome back, {user?.name}! ({user?.role?.toUpperCase()}) Here are your ride assignments</p>
         </div>
 
         {/* Stats Cards */}
