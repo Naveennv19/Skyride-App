@@ -11,7 +11,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ success: boolean; redirectTo?: string }>;
   register: (userData: Omit<User, 'id'> & { password: string }) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; redirectTo?: string }> => {
     // Simulate API call - In real app, this would be an actual API call
     const mockUsers = JSON.parse(localStorage.getItem('users') || '[]');
     const foundUser = mockUsers.find((u: any) => u.email === email && u.password === password);
@@ -53,7 +53,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(userWithoutPassword);
       setIsAuthenticated(true);
       localStorage.setItem('user', JSON.stringify(userWithoutPassword));
-      return true;
+      
+      // Return appropriate redirect based on role
+      const redirectTo = userWithoutPassword.role === 'customer' ? '/' : 
+                        userWithoutPassword.role === 'driver' ? '/driver-dashboard' : 
+                        '/admin-dashboard';
+      
+      return { success: true, redirectTo };
     }
     
     // Default admin user for demo
@@ -68,10 +74,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(adminUser);
       setIsAuthenticated(true);
       localStorage.setItem('user', JSON.stringify(adminUser));
-      return true;
+      return { success: true, redirectTo: '/admin-dashboard' };
     }
     
-    return false;
+    return { success: false };
   };
 
   const register = async (userData: Omit<User, 'id'> & { password: string }): Promise<boolean> => {

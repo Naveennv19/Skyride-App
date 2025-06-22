@@ -21,28 +21,15 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const success = await login(email, password);
-      if (success) {
+      const result = await login(email, password);
+      if (result.success) {
         toast({
           title: "Login successful",
           description: "Welcome back to SkyRide!",
         });
         
-        // Redirect based on user role
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        switch (user.role) {
-          case 'customer':
-            navigate('/customer-dashboard');
-            break;
-          case 'driver':
-            navigate('/driver-dashboard');
-            break;
-          case 'admin':
-            navigate('/admin-dashboard');
-            break;
-          default:
-            navigate('/');
-        }
+        // Navigate to the appropriate page based on redirectTo
+        navigate(result.redirectTo || '/');
       } else {
         toast({
           title: "Login failed",

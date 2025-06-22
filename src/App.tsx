@@ -15,6 +15,8 @@ import CustomerDashboard from "./pages/CustomerDashboard";
 import DriverDashboard from "./pages/DriverDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import BookRide from "./pages/BookRide";
+import Business from "./pages/Business";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +35,8 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/admin-login" element={<AdminLogin />} />
+                <Route path="/business" element={<Business />} />
+                <Route path="/about" element={<About />} />
                 <Route 
                   path="/customer-dashboard" 
                   element={

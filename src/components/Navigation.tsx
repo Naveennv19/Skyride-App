@@ -39,19 +39,22 @@ const Navigation = () => {
               </Link>
               
               <div className="hidden md:flex space-x-6">
-                <Link to="/" className="text-gray-700 hover:text-black transition-colors">
-                  Ride
-                </Link>
+                {/* Only show Ride link to customers or non-authenticated users */}
+                {(!isAuthenticated || user?.role === 'customer') && (
+                  <Link to="/" className="text-gray-700 hover:text-black transition-colors">
+                    Ride
+                  </Link>
+                )}
                 {/* Only show Drive link to drivers */}
                 {(!isAuthenticated || user?.role === 'driver') && (
                   <Link to="/driver-dashboard" className="text-gray-700 hover:text-black transition-colors">
                     Drive
                   </Link>
                 )}
-                <Link to="#" className="text-gray-700 hover:text-black transition-colors">
+                <Link to="/business" className="text-gray-700 hover:text-black transition-colors">
                   Business
                 </Link>
-                <Link to="#" className="text-gray-700 hover:text-black transition-colors">
+                <Link to="/about" className="text-gray-700 hover:text-black transition-colors">
                   About
                 </Link>
               </div>
