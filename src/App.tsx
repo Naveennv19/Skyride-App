@@ -40,7 +40,7 @@ const App = () => (
                 <Route 
                   path="/customer-dashboard" 
                   element={
-                    <ProtectedRoute requiredRole="customer">
+                    <ProtectedRoute requiredRole="CUSTOMER">
                       <CustomerDashboard />
                     </ProtectedRoute>
                   } 
@@ -48,7 +48,7 @@ const App = () => (
                 <Route 
                   path="/driver-dashboard" 
                   element={
-                    <ProtectedRoute requiredRole="driver">
+                    <ProtectedRoute requiredRole="DRIVER">
                       <DriverDashboard />
                     </ProtectedRoute>
                   } 
@@ -56,7 +56,7 @@ const App = () => (
                 <Route 
                   path="/admin-dashboard" 
                   element={
-                    <ProtectedRoute requiredRole="admin">
+                    <ProtectedRoute requiredRole="ADMIN">
                       <AdminDashboard />
                     </ProtectedRoute>
                   } 

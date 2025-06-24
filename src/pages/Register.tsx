@@ -15,7 +15,7 @@ const Register = () => {
     email: '',
     phone: '',
     password: '',
-    role: '' as 'customer' | 'driver'
+    role: '' as 'CUSTOMER' | 'DRIVER'
   });
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();

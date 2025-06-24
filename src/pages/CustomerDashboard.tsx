@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,12 @@ import Navigation from '@/components/Navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Car, Calendar, MapPin, Filter, Plus } from 'lucide-react';
+import BookingCard from '@/components/ui/BookingCard';
+import StatCard from '@/components/ui/StatCard';
+import BookingSection from '@/components/ui/BookingSection';
+import FilterDropdown from '@/components/ui/FilterDropdown';
+
+import axios from 'axios';
 
 interface Booking {
   id: string;
@@ -19,8 +24,6 @@ interface Booking {
   time: string;
   status: 'pending' | 'assigned' | 'completed' | 'scheduled' | 'cancelled';
   createdAt: string;
-  rideOption?: string;
-  scheduled?: boolean;
 }
 
 const CustomerDashboard = () => {
@@ -32,20 +35,49 @@ const CustomerDashboard = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const savedBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    setBookings(savedBookings);
-    setFilteredBookings(savedBookings);
+    const fetchBookings = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:8080/user/booking', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const backendBookings: Booking[] = response.data.map((b: any) => ({
+          id: b.id,
+          pickupLocation: b.pickupLocation,
+          dropLocation: b.dropLocation,
+          rideType: b.rideType?.toLowerCase() || 'unknown', // depends on backend
+          date: b.date,
+          time: b.time,
+          status: b.status.toLowerCase(),
+          createdAt: new Date().toISOString(),
+        }));
+
+        setBookings(backendBookings);
+        setFilteredBookings(backendBookings);
+      } catch (error) {
+        console.error('Failed to fetch bookings:', error);
+        toast({
+          title: 'Error',
+          description: 'Unable to load bookings from server.',
+        });
+      }
+    };
+
+    fetchBookings();
   }, []);
 
   useEffect(() => {
     let filtered = bookings;
 
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(booking => booking.status === statusFilter);
+      filtered = filtered.filter((booking) => booking.status === statusFilter);
     }
 
     if (rideTypeFilter !== 'all') {
-      filtered = filtered.filter(booking => booking.rideType === rideTypeFilter);
+      filtered = filtered.filter((booking) => booking.rideType === rideTypeFilter);
     }
 
     setFilteredBookings(filtered);
@@ -69,31 +101,27 @@ const CustomerDashboard = () => {
   };
 
   const handleCancelRide = (bookingId: string) => {
-    const updatedBookings = bookings.map(booking =>
-      booking.id === bookingId
-        ? { ...booking, status: 'cancelled' as const }
-        : booking
+    const updatedBookings = bookings.map((booking) =>
+      booking.id === bookingId ? { ...booking, status: 'cancelled' as const } : booking
     );
     setBookings(updatedBookings);
-    localStorage.setItem('bookings', JSON.stringify(updatedBookings));
-    
+
     toast({
-      title: "Ride cancelled",
-      description: "Your ride has been cancelled successfully.",
+      title: 'Ride cancelled',
+      description: 'Your ride has been cancelled successfully.',
     });
   };
 
   const recentBookings = filteredBookings.slice(0, 3);
   const totalBookings = bookings.length;
-  const completedBookings = bookings.filter(b => b.status === 'completed').length;
-  const pendingBookings = bookings.filter(b => b.status === 'pending').length;
+  const completedBookings = bookings.filter((b) => b.status === 'completed').length;
+  const pendingBookings = bookings.filter((b) => b.status === 'pending').length;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Welcome back, {user?.name}!</h1>
@@ -107,107 +135,15 @@ const CustomerDashboard = () => {
           </Link>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stat Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="skeuomorphic-card">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="bg-blue-100 p-3 rounded-full">
-                  <Car className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{totalBookings}</p>
-                  <p className="text-gray-600">Total Bookings</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="skeuomorphic-card">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="bg-green-100 p-3 rounded-full">
-                  <Calendar className="h-6 w-6 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{completedBookings}</p>
-                  <p className="text-gray-600">Completed Rides</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="skeuomorphic-card">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="bg-yellow-100 p-3 rounded-full">
-                  <MapPin className="h-6 w-6 text-yellow-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{pendingBookings}</p>
-                  <p className="text-gray-600">Pending Rides</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <StatCard icon={<Car />} label="Total Bookings" value={totalBookings} bg="blue" />
+          <StatCard icon={<Calendar />} label="Completed Rides" value={completedBookings} bg="green" />
+          <StatCard icon={<MapPin />} label="Pending Rides" value={pendingBookings} bg="yellow" />
         </div>
 
         {/* Recent Bookings */}
-        <Card className="skeuomorphic-card mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Car className="h-5 w-5" />
-              <span>Recent Bookings</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {recentBookings.length > 0 ? (
-              <div className="space-y-4">
-                {recentBookings.map((booking) => (
-                  <div key={booking.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <Badge className={getStatusColor(booking.status)}>
-                            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                          </Badge>
-                          <span className="text-sm text-gray-500 capitalize">{booking.rideType} Travel</span>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="font-medium">From: {booking.pickupLocation}</p>
-                          <p className="font-medium">To: {booking.dropLocation}</p>
-                          {booking.date && (
-                            <p className="text-sm text-gray-600">
-                              Scheduled: {booking.date} at {booking.time}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      {booking.status === 'pending' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleCancelRide(booking.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          Cancel
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Car className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No bookings yet</p>
-                <Link to="/book-ride">
-                  <Button className="mt-4">Book your first ride</Button>
-                </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <BookingSection title="Recent Bookings" bookings={recentBookings} onCancel={handleCancelRide} getStatusColor={getStatusColor} />
 
         {/* All Bookings with Filters */}
         <Card className="skeuomorphic-card">
@@ -218,78 +154,16 @@ const CustomerDashboard = () => {
                 <span>All Bookings</span>
               </CardTitle>
               <div className="flex space-x-4">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="assigned">Assigned</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="scheduled">Scheduled</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={rideTypeFilter} onValueChange={setRideTypeFilter}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Filter by ride type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="airport">Airport Travel</SelectItem>
-                    <SelectItem value="local">Local Travel</SelectItem>
-                    <SelectItem value="outstation">Outstation Travel</SelectItem>
-                    <SelectItem value="hourly">Hourly Rentals</SelectItem>
-                  </SelectContent>
-                </Select>
+                <FilterDropdown value={statusFilter} onChange={setStatusFilter} label="status" options={['all', 'pending', 'assigned', 'completed', 'scheduled', 'cancelled']} />
+                <FilterDropdown value={rideTypeFilter} onChange={setRideTypeFilter} label="ride type" options={['all', 'airport', 'local', 'outstation', 'hourly']} />
               </div>
             </div>
           </CardHeader>
           <CardContent>
             {filteredBookings.length > 0 ? (
-              <div className="space-y-4">
-                {filteredBookings.map((booking) => (
-                  <div key={booking.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <Badge className={getStatusColor(booking.status)}>
-                            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                          </Badge>
-                          <span className="text-sm text-gray-500 capitalize">{booking.rideType} Travel</span>
-                          {booking.rideOption && (
-                            <span className="text-sm text-gray-500 capitalize">• {booking.rideOption}</span>
-                          )}
-                        </div>
-                        <div className="space-y-1">
-                          <p className="font-medium">From: {booking.pickupLocation}</p>
-                          <p className="font-medium">To: {booking.dropLocation}</p>
-                          {booking.date && (
-                            <p className="text-sm text-gray-600">
-                              Scheduled: {booking.date} at {booking.time}
-                            </p>
-                          )}
-                          <p className="text-xs text-gray-500">
-                            Booked: {new Date(booking.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                      {booking.status === 'pending' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleCancelRide(booking.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          Cancel
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              filteredBookings.map((booking) => (
+                <BookingCard key={booking.id} booking={booking} getStatusColor={getStatusColor} onCancel={handleCancelRide} />
+              ))
             ) : (
               <div className="text-center py-8">
                 <p className="text-gray-600">No bookings match your filters</p>

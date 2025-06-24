@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: ReactNode;
-  requiredRole?: 'customer' | 'driver' | 'admin';
+  requiredRole?: 'CUSTOMER' | 'DRIVER' | 'ADMIN';
 }
 
 const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
@@ -18,11 +18,11 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
   if (requiredRole && user?.role !== requiredRole) {
     // Redirect to appropriate dashboard based on user role
     switch (user?.role) {
-      case 'customer':
+      case 'CUSTOMER':
         return <Navigate to="/customer-dashboard" replace />;
-      case 'driver':
+      case 'DRIVER':
         return <Navigate to="/driver-dashboard" replace />;
-      case 'admin':
+      case 'ADMIN':
         return <Navigate to="/admin-dashboard" replace />;
       default:
         return <Navigate to="/" replace />;
