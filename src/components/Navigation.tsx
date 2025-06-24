@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,6 +6,8 @@ import { Car, User, LogOut, Phone, Mail, MapPin } from 'lucide-react';
 const Navigation = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  console.log('Auth user:', user);
+
 
   const handleLogout = () => {
     logout();
@@ -16,16 +17,18 @@ const Navigation = () => {
   const getDashboardLink = () => {
     if (!user) return '/';
     switch (user.role) {
-      case 'customer':
+      case 'CUSTOMER':
         return '/customer-dashboard';
-      case 'driver':
+      case 'DRIVER':
         return '/driver-dashboard';
-      case 'admin':
+      case 'ADMIN':
         return '/admin-dashboard';
       default:
         return '/';
     }
   };
+
+
 
   return (
     <>
@@ -40,13 +43,13 @@ const Navigation = () => {
               
               <div className="hidden md:flex space-x-6">
                 {/* Only show Ride link to customers or non-authenticated users */}
-                {(!isAuthenticated || user?.role === 'customer') && (
+                {(!isAuthenticated || user?.role === 'CUSTOMER') && (
                   <Link to="/" className="text-gray-700 hover:text-black transition-colors">
                     Ride
                   </Link>
                 )}
                 {/* Only show Drive link to drivers */}
-                {(!isAuthenticated || user?.role === 'driver') && (
+                {(!isAuthenticated || user?.role === 'DRIVER') && (
                   <Link to="/driver-dashboard" className="text-gray-700 hover:text-black transition-colors">
                     Drive
                   </Link>

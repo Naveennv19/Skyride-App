@@ -1,12 +1,13 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { jwtDecode } from 'jwt-decode';
+import api from '@/lib/axios';
 
 interface User {
   id: string;
   name: string;
   email: string;
   phone: string;
-  role: 'customer' | 'driver' | 'admin';
+  role: 'CUSTOMER' | 'DRIVER' | 'ADMIN';
 }
 
 interface AuthContextType {
@@ -21,9 +22,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
 
@@ -43,80 +42,77 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; redirectTo?: string }> => {
-    // Simulate API call - In real app, this would be an actual API call
-    const mockUsers = JSON.parse(localStorage.getItem('users') || '[]');
-    const foundUser = mockUsers.find((u: any) => u.email === email && u.password === password);
-    
-    if (foundUser) {
-      const { password: _, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(userWithoutPassword));
-      
-      // Return appropriate redirect based on role
-      const redirectTo = userWithoutPassword.role === 'customer' ? '/' : 
-                        userWithoutPassword.role === 'driver' ? '/driver-dashboard' : 
-                        '/admin-dashboard';
-      
-      return { success: true, redirectTo };
-    }
-    
-    // Default admin user for demo
-    if (email === 'admin_1@gmail.com' && password === 'admin_1') {
-      const adminUser = {
-        id: 'admin-1',
-        name: 'Admin User',
-        email: 'admin_1@gmail.com',
-        phone: '+1234567890',
-        role: 'admin' as const
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; redirectTo?: string }> => {
+    try {
+      const res = await api.post('/user/login', { email, password });
+
+      // ✅ Extract token and decode it if needed
+      const token = res.data.token;
+      const decoded = jwtDecode<{ sub: string; exp: number }>(token);
+
+      // ✅ Use user details from response
+      const loggedInUser: User = {
+        id: res.data.id,
+        name: res.data.name,
+        email: res.data.email,
+        phone: res.data.phone,
+        role: res.data.role?.toUpperCase() || 'CUSTOMER',
       };
-      setUser(adminUser);
+
+      setUser(loggedInUser);
       setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(adminUser));
-      return { success: true, redirectTo: '/admin-dashboard' };
+      localStorage.setItem('user', JSON.stringify(loggedInUser));
+      localStorage.setItem('token', token);
+
+      const redirectTo =
+        loggedInUser.role === 'CUSTOMER'
+          ? '/customer-dashboard'
+          : loggedInUser.role === 'DRIVER'
+          ? '/driver-dashboard'
+          : '/admin-dashboard';
+
+          console.log(loggedInUser.role)
+
+      return { success: true, redirectTo };
+    } catch (error) {
+      console.error('Login failed:', error);
+      return { success: false };
     }
-    
-    return { success: false };
   };
 
-  const register = async (userData: Omit<User, 'id'> & { password: string }): Promise<boolean> => {
-    // Simulate API call
-    const mockUsers = JSON.parse(localStorage.getItem('users') || '[]');
-    const existingUser = mockUsers.find((u: any) => u.email === userData.email);
-    
-    if (existingUser) {
+  const register = async (
+    userData: Omit<User, 'id'> & { password: string }
+  ): Promise<boolean> => {
+    try {
+      const payload = {
+        ...userData,
+        role: userData.role.toUpperCase(),
+      };
+      const res = await api.post('/user/register', payload);
+      return res.status === 200 || res.status === 201;
+    } catch (error) {
+      console.error('Registration failed:', error);
       return false;
     }
-    
-    const newUser = {
-      ...userData,
-      id: `user-${Date.now()}`
-    };
-    
-    mockUsers.push(newUser);
-    localStorage.setItem('users', JSON.stringify(mockUsers));
-    
-    return true;
   };
 
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
-  const value = {
+  const value: AuthContextType = {
     user,
     login,
     register,
     logout,
-    isAuthenticated
+    isAuthenticated,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
