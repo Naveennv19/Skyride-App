@@ -16,7 +16,7 @@ interface Booking {
   dropLocation: string;
   date: string;
   time: string;
-  status: 'pending' | 'assigned' | 'completed' | 'scheduled' | 'cancelled';
+  status: 'pending' | 'assigned' | 'completed' | 'cancelled';
   createdAt: string;
   customerName?: string;
   assignedDriver?: string;
