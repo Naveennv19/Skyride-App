@@ -10,7 +10,7 @@ interface BookingCardProps {
     date: string;
     time: string;
     status: string;
-    createdAt: string;
+    createdAt?: string; // optional to avoid crashing on missing field
   };
   getStatusColor: (status: string) => string;
   onCancel: (bookingId: string) => void;
@@ -25,15 +25,25 @@ const BookingCard = ({ booking, getStatusColor, onCancel }: BookingCardProps) =>
             <Badge className={getStatusColor(booking.status)}>
               {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
             </Badge>
-            <span className="text-sm text-gray-500 capitalize">{booking.rideType} Travel</span>
+            <span className="text-sm text-gray-500 capitalize">
+              {booking.rideType} Travel
+            </span>
           </div>
+
           <div className="space-y-1">
             <p className="font-medium">From: {booking.pickupLocation}</p>
             <p className="font-medium">To: {booking.dropLocation}</p>
-            <p className="text-sm text-gray-600">Scheduled: {booking.date} at {booking.time}</p>
-            <p className="text-xs text-gray-500">Booked: {new Date(booking.createdAt).toLocaleDateString()}</p>
+            <p className="text-sm text-gray-600">
+              Scheduled: {booking.date} at {booking.time}
+            </p>
+            {booking.createdAt && (
+              <p className="text-xs text-gray-500">
+                Booked: {new Date(booking.createdAt).toLocaleDateString()}
+              </p>
+            )}
           </div>
         </div>
+
         {booking.status === 'pending' && (
           <Button
             variant="outline"

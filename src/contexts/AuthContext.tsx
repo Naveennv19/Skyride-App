@@ -16,6 +16,7 @@ interface AuthContextType {
   register: (userData: Omit<User, 'id'> & { password: string }) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,13 +34,37 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
+    const token = localStorage.getItem('token');
+    console.log('AuthProvider useEffect: token from localStorage:', token);
+    if (storedUser && token) {
+      try {
+        const decoded: { exp: number } = jwtDecode(token);
+        console.log('Decoded token:', decoded);
+        console.log('Token expiry (ms):', decoded.exp * 1000, 'Current time (ms):', Date.now());
+        if (decoded.exp * 1000 > Date.now()) {
+          setUser(JSON.parse(storedUser));
+          setIsAuthenticated(true);
+          console.log('User restored from localStorage:', storedUser);
+        } else {
+          // Token expired
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+
+        }
+      } catch (e) {
+        // Invalid token
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+
+      }
+    } else {
+      console.log('No storedUser or token found in localStorage');
     }
+    setLoading(false);
   }, []);
 
   const login = async (
@@ -112,6 +137,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     logout,
     isAuthenticated,
+    loading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

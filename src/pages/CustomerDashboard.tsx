@@ -42,7 +42,9 @@ const CustomerDashboard = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          
         });
+        console.log('Raw backend response:', response.data);
 
         const backendBookings: Booking[] = response.data.map((b: any) => ({
           id: b.id,
@@ -52,7 +54,7 @@ const CustomerDashboard = () => {
           date: b.date,
           time: b.time,
           status: b.status.toLowerCase(),
-          createdAt: new Date().toISOString(),
+          createdAt: b.createdAt || new Date().toISOString(),
         }));
 
         setBookings(backendBookings);
@@ -69,19 +71,19 @@ const CustomerDashboard = () => {
     fetchBookings();
   }, []);
 
-  useEffect(() => {
-    let filtered = bookings;
+  // useEffect(() => {
+  //   let filtered = bookings;
 
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter((booking) => booking.status === statusFilter);
-    }
+  //   if (statusFilter !== 'all') {
+  //     filtered = filtered.filter((booking) => booking.status === statusFilter);
+  //   }
 
-    if (rideTypeFilter !== 'all') {
-      filtered = filtered.filter((booking) => booking.rideType === rideTypeFilter);
-    }
+  //   if (rideTypeFilter !== 'all') {
+  //     filtered = filtered.filter((booking) => booking.rideType === rideTypeFilter);
+  //   }
 
-    setFilteredBookings(filtered);
-  }, [bookings, statusFilter, rideTypeFilter]);
+  //   setFilteredBookings(filtered);
+  // }, [bookings, statusFilter, rideTypeFilter]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
