@@ -1,12 +1,14 @@
-
 import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Car, Calendar, MapPin, Clock, User, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Navigation from '@/components/Navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Car, Calendar, MapPin, User, DollarSign, Clock } from 'lucide-react';
+
+type BookingStatus = 'pending' | 'assigned' | 'completed' | 'scheduled';
 
 interface Booking {
   id: string;
@@ -15,7 +17,7 @@ interface Booking {
   dropLocation: string;
   date: string;
   time: string;
-  status: 'pending' | 'assigned' | 'completed' | 'scheduled';
+  status: BookingStatus;
   createdAt: string;
   customerName?: string;
   assignedDriver?: string;
@@ -30,14 +32,31 @@ const DriverDashboard = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    const savedBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    // Only show bookings assigned to this driver
-    const driverBookings = savedBookings.filter((booking: Booking) => 
-      booking.assignedDriver === user?.id
-    );
-    
-    setBookings(driverBookings);
-    setFilteredBookings(driverBookings);
+    async function fetchDriverBookings() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:8080/user/booking', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("Booking: ",response.data);
+
+        const typedBookings = response.data.map((b: any): Booking => ({
+          ...b,
+          status: b.status.toUpperCase() as BookingStatus,
+        }));
+
+        console.log("typrd booking: ",typedBookings);
+
+        setBookings(typedBookings);
+        setFilteredBookings(typedBookings);
+      } catch (error) {
+        console.error('Error fetching driver bookings:', error);
+      }
+    }
+
+    if (user?.role === 'DRIVER') {
+      fetchDriverBookings();
+    }
   }, [user]);
 
   useEffect(() => {
@@ -54,7 +73,7 @@ const DriverDashboard = () => {
     setFilteredBookings(filtered);
   }, [bookings, statusFilter, rideTypeFilter]);
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: BookingStatus) => {
     switch (status) {
       case 'assigned':
         return 'bg-blue-100 text-blue-800';
@@ -75,15 +94,15 @@ const DriverDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Driver Dashboard</h1>
-          <p className="text-gray-600">Welcome back, {user?.name}! ({user?.role?.toUpperCase()}) Here are your ride assignments</p>
+          <p className="text-gray-600">
+            Welcome back, {user?.name}! ({user?.role?.toUpperCase()}) Here are your ride assignments
+          </p>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="skeuomorphic-card">
             <CardContent className="p-6">
@@ -142,8 +161,8 @@ const DriverDashboard = () => {
           </Card>
         </div>
 
-        {/* Recent Assigned Rides */}
-        <Card className="skeuomorphic-card mb-8">
+         {/* Recent Assigned Rides */}
+         <Card className="skeuomorphic-card mb-8">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Car className="h-5 w-5" />
@@ -289,6 +308,7 @@ const DriverDashboard = () => {
             )}
           </CardContent>
         </Card>
+        
       </div>
     </div>
   );
