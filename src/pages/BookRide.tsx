@@ -22,11 +22,12 @@ const BookRide = () => {
   const navigate = useNavigate();
 
   const rideTypes = [
-    { value: 'airport', label: 'Airport Travel', icon: <Plane className="h-5 w-5" /> },
-    { value: 'local', label: 'Local Travel', icon: <Car className="h-5 w-5" /> },
-    { value: 'outstation', label: 'Outstation Travel', icon: <Globe className="h-5 w-5" /> },
-    { value: 'hourly', label: 'Hourly Rentals', icon: <Timer className="h-5 w-5" /> },
+    { value: 'AIRPORT_TRAVEL', label: 'Airport Travel', icon: <Plane className="h-5 w-5" /> },
+    { value: 'LOCAL_TRAVEL', label: 'Local Travel', icon: <Car className="h-5 w-5" /> },
+    { value: 'OUTSTATION_TRAVEL', label: 'Outstation Travel', icon: <Globe className="h-5 w-5" /> },
+    { value: 'RENTAL_HOURS', label: 'Hourly Rentals', icon: <Timer className="h-5 w-5" /> },
   ];
+  
 
   const mockPrices = {
     economy: { price: 25, time: '5-10 min', capacity: '4 seats' },
@@ -50,28 +51,58 @@ const BookRide = () => {
     setShowPrices(true);
   };
 
-  const handleBookRide = (rideOption: string) => {
-    const booking = {
-      id: `booking-${Date.now()}`,
-      ...bookingData,
-      rideOption,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-    };
-
-    // Save booking to localStorage
-    const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    existingBookings.push(booking);
-    localStorage.setItem('bookings', JSON.stringify(existingBookings));
-
-    toast({
-      title: "Ride booked successfully!",
-      description: "Your ride request has been submitted. You'll be notified when a driver is assigned.",
-    });
-
-    navigate('/customer-dashboard');
+  const handleBookRide = async (rideOption: string) => {
+    if (!bookingData.rideType || !bookingData.pickupLocation || !bookingData.dropLocation || !bookingData.date || !bookingData.time) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+  
+    try {
+      const token = localStorage.getItem('token'); // assume stored after login
+  
+      const response = await fetch('http://localhost:8080/user/booking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // required for jwtAuthService
+        },
+        body: JSON.stringify({
+          type: bookingData.rideType,               // e.g., "LOCAL_TRAVEL"
+          pickupLoc: bookingData.pickupLocation,
+          dropLoc: bookingData.dropLocation,
+          packageHrs: "8",                          // You can make this dynamic
+          dateTime: bookingData.date,              // e.g., "2025-06-25"
+          time: bookingData.time,                  // e.g., "10:30"
+          returnDateTime: null,                    // Optional - add fields in UI to support it
+          returnTime: null                         // Optional - add fields in UI to support it
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.message || 'Booking failed');
+      }
+  
+      toast({
+        title: "Booking successful",
+        description: `Booking ID: ${data.bookingId}`,
+      });
+  
+      navigate('/customer-dashboard');
+    } catch (error: any) {
+      toast({
+        title: "Booking failed",
+        description: error.message || 'Unexpected error occurred.',
+        variant: "destructive",
+      });
+    }
   };
-
+  
   const handleScheduleForLater = () => {
     if (!bookingData.date || !bookingData.time) {
       toast({

@@ -53,7 +53,7 @@ const CustomerDashboard = () => {
           rideType: b.rideType?.toLowerCase() || 'unknown', // depends on backend
           date: b.date,
           time: b.time,
-          status: b.status.toLowerCase(),
+          status: (b.status?.toLowerCase() ?? 'pending') as Booking['status'],
           createdAt: b.createdAt || new Date().toISOString(),
         }));
 
