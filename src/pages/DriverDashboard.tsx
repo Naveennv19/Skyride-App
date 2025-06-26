@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Navigation from '@/components/Navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
-type BookingStatus = 'pending' | 'assigned' | 'completed' | 'scheduled';
+type BookingStatus = 'PENDING' | 'ASSIGNED' | 'COMPLETED' | 'SCHEDULED';
+
 
 interface Booking {
   id: string;
@@ -75,21 +76,46 @@ const DriverDashboard = () => {
 
   const getStatusColor = (status: BookingStatus) => {
     switch (status) {
-      case 'assigned':
+      case 'ASSIGNED':
         return 'bg-blue-100 text-blue-800';
-      case 'completed':
+      case 'COMPLETED':
         return 'bg-green-100 text-green-800';
-      case 'scheduled':
+      case 'SCHEDULED':
         return 'bg-purple-100 text-purple-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
 
+  const completeRide = async (bookingId: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `http://localhost:8080/driver/complete-booking/${bookingId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      alert(response.data.message || 'Ride marked as completed');
+  
+      // Update the booking status locally
+      const updatedBookings = bookings.map((b) =>
+        b.id === bookingId ? { ...b, status: 'completed' as BookingStatus } : b
+      );
+      setBookings(updatedBookings);
+    } catch (error: any) {
+      console.error('Error completing ride:', error);
+      alert(error.response?.data || 'Failed to complete the ride');
+    }
+  };
+  
+
   const recentBookings = filteredBookings.slice(0, 3);
   const totalRides = bookings.length;
-  const completedRides = bookings.filter(b => b.status === 'completed').length;
-  const assignedRides = bookings.filter(b => b.status === 'assigned').length;
+  const completedRides = bookings.filter(b => b.status === 'COMPLETED').length;
+  const assignedRides = bookings.filter(b => b.status === 'ASSIGNED').length;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -205,11 +231,15 @@ const DriverDashboard = () => {
                       </div>
                       <div className="space-y-2">
                         <p className="text-sm text-gray-600 capitalize">{booking.rideOption || 'Economy'}</p>
-                        {booking.status === 'assigned' && (
-                          <Button size="sm" className="w-full">
-                            Start Ride
-                          </Button>
+                        {booking.status === 'ASSIGNED' && (
+                          <div className="space-y-2">
+                            <Button size="sm" className="w-full" onClick={() => completeRide(booking.id)}>
+                              Complete Ride
+                            </Button>
+                          </div>
                         )}
+
+
                       </div>
                     </div>
                   </div>
@@ -293,7 +323,7 @@ const DriverDashboard = () => {
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-gray-600 capitalize mb-2">{booking.rideOption || 'Economy'}</p>
-                        {booking.status === 'completed' && (
+                        {booking.status === 'COMPLETED' && (
                           <p className="text-sm font-semibold text-green-600">+$25</p>
                         )}
                       </div>

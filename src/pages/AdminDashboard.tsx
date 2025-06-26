@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Car, Users, MapPin, DollarSign, Settings, UserCheck } from 'lucide-react';
 
 interface Booking {
+  driverName: string;
   id: string;
   rideType: string;
   pickupLocation: string;
@@ -210,6 +211,46 @@ const AdminDashboard = () => {
               <div className="text-center py-8">
                 <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600">No pending assignments</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Booking History */}
+        <Card className="skeuomorphic-card mb-8">
+          <CardHeader><CardTitle className="flex items-center space-x-2"><Users className="h-5 w-5" /><span>Booking History</span></CardTitle></CardHeader>
+          <CardContent>
+            {filteredBookings.length > 0 ? (
+              filteredBookings.map((booking) => (
+                <div key={booking.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors mb-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Badge className={getStatusColor(booking.status)}>
+                          {booking.status.charAt(0) + booking.status.slice(1).toLowerCase()}
+                        </Badge>
+                        <span className="text-sm capitalize">{booking.rideType}</span>
+                      </div>
+                      <p className="text-sm">Customer: {booking.customerName}</p>
+                      <p className="text-sm">From: {booking.pickupLocation}</p>
+                      <p className="text-sm">To: {booking.dropLocation}</p>
+                      <p className="text-sm">Time: {booking.date} at {booking.time}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-600">
+                        Assigned Driver: {booking.driverName || 'Not assigned'}
+                      </p>
+                      {booking.status === 'completed' && (
+                        <p className="text-sm font-semibold text-green-600 mt-1">+$25</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600">No bookings available</p>
               </div>
             )}
           </CardContent>
